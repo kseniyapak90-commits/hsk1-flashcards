@@ -3,76 +3,75 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HSK1 Flashcards</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HSK Flashcards</title>
 <style>
-body{margin:0;background:#e9e5df;font-family:-apple-system;display:flex;justify-content:center;align-items:center;height:100vh}
-.container{width:90%;max-width:420px;text-align:center}
-.title{background:#f5a63b;padding:12px;border-radius:30px;font-size:24px;font-weight:bold;margin-bottom:20px;box-shadow:0 6px #b36a1e}
+body{margin:0;background:#e9e5df;font-family:-apple-system;display:flex;justify-content:center;align-items:center;height:100vh;}
+.container{width:92%;max-width:420px;text-align:center}
+.title{background:#f5a63b;padding:14px;border-radius:30px;font-size:22px;font-weight:bold;margin-bottom:18px;box-shadow:0 6px #b36a1e;}
 .card{width:100%;height:300px;perspective:1000px}
-.inner{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d}
+.inner{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d;}
 .card.flip .inner{transform:rotateY(180deg)}
-.side{position:absolute;width:100%;height:100%;background:#2e5b46;border-radius:25px;border:10px solid #7a5631;
-display:flex;flex-direction:column;justify-content:center;align-items:center;color:white;
-box-shadow:inset 0 0 0 6px #3f7a5e,0 10px 20px rgba(0,0,0,.2);backface-visibility:hidden}
+.side{position:absolute;width:100%;height:100%;background:#2e5b46;border-radius:25px;border:10px solid #7a5631;display:flex;flex-direction:column;justify-content:center;align-items:center;color:white;backface-visibility:hidden;box-shadow: inset 0 0 6px #3f7a5e,0 10px 20px rgba(0,0,0,.2);}
 .back{transform:rotateY(180deg)}
-.hanzi{font-size:70px;margin-bottom:10px}
-.example{background:rgba(255,255,255,.15);padding:10px 20px;border-radius:20px;font-size:22px}
-.controls{margin-top:20px;display:flex;gap:15px;justify-content:center}
-button{background:#e9c48c;border:none;padding:12px 25px;border-radius:30px;font-size:18px;box-shadow:0 6px #a77a40}
+.hanzi{font-size:72px;margin-bottom:10px}
+.controls{margin-top:20px;display:flex;gap:12px;justify-content:center}
+button{background:#e9c48c;border:none;padding:12px 22px;border-radius:30px;font-size:16px;box-shadow:0 6px #a77a40;}
+.counter{margin-top:10px;font-size:14px;color:#333}
 </style>
 </head>
-
 <body>
 
 <div class="container">
-<div class="title">📚 词语练习 (HSK一级)</div>
+<div class="title">HSK Flashcards</div>
 
 <div class="card" id="card">
 <div class="inner">
-
 <div class="side">
-<div class="hanzi" id="hanzi"></div>
-<div class="example" id="example"></div>
+<div class="hanzi" id="word"></div>
+<div>tap to flip</div>
 </div>
-
 <div class="side back">
-<div id="pinyin"></div>
-<div id="translation"></div>
-<br>
-<div id="exampleBack"></div>
-<div id="exampleRu"></div>
+<div class="hanzi" id="wordBack"></div>
+<div>HSK word</div>
 </div>
-
 </div>
 </div>
 
 <div class="controls">
-<button onclick="prevCard()">← 上一个</button>
-<button onclick="nextCard()">下一个 →</button>
+<button onclick="prev()">←</button>
+<button onclick="next()">→</button>
 </div>
 
+<div class="counter" id="counter"></div>
 </div>
 
 <script>
-const cards=[{hanzi:"爱",pinyin:"ài",translation:"любить",example:"我爱你。",example_ru:"Я люблю тебя."},{hanzi:"八",pinyin:"bā",translation:"восемь",example:"八个人。",example_ru:"Восемь человек."},{hanzi:"爸爸",pinyin:"bàba",translation:"папа",example:"我爸爸很好。",example_ru:"Мой папа хороший."},{hanzi:"白天",pinyin:"báitiān",translation:"днём",example:"我白天工作。",example_ru:"Я работаю днём."},{hanzi:"半",pinyin:"bàn",translation:"половина",example:"三点半。",example_ru:"Половина четвёртого."},{hanzi:"包子",pinyin:"bāozi",translation:"баоцзы",example:"我喜欢吃包子。",example_ru:"Мне нравятся баоцзы."},{hanzi:"杯子",pinyin:"bēizi",translation:"чашка",example:"这是我的杯子。",example_ru:"Это моя чашка."},{hanzi:"北京",pinyin:"Běijīng",translation:"Пекин",example:"我在北京。",example_ru:"Я в Пекине."},{hanzi:"本",pinyin:"běn",translation:"сч. слово для книг",example:"三本书。",example_ru:"Три книги."},{hanzi:"不",pinyin:"bù",translation:"не",example:"我不去。",example_ru:"Я не иду."},{hanzi:"菜",pinyin:"cài",translation:"блюдо",example:"这个菜很好吃。",example_ru:"Это блюдо вкусное."},{hanzi:"茶",pinyin:"chá",translation:"чай",example:"我喝茶。",example_ru:"Я пью чай."},{hanzi:"吃",pinyin:"chī",translation:"есть",example:"我吃米饭。",example_ru:"Я ем рис."},{hanzi:"出租车",pinyin:"chūzūchē",translation:"такси",example:"我坐出租车。",example_ru:"Я еду на такси."},{hanzi:"大",pinyin:"dà",translation:"большой",example:"这个房间很大。",example_ru:"Эта комната большая."},{hanzi:"的",pinyin:"de",translation:"частица",example:"我的书。",example_ru:"Моя книга."},{hanzi:"点",pinyin:"diǎn",translation:"час",example:"三点。",example_ru:"Три часа."},{hanzi:"电脑",pinyin:"diànnǎo",translation:"компьютер",example:"我用电脑学习。",example_ru:"Я учусь на компьютере."},{hanzi:"电影",pinyin:"diànyǐng",translation:"фильм",example:"这个电影很好看。",example_ru:"Этот фильм хороший."},{hanzi:"读",pinyin:"dú",translation:"читать",example:"我读书。",example_ru:"Я читаю."},{hanzi:"多",pinyin:"duō",translation:"много",example:"这里人很多。",example_ru:"Здесь много людей."},{hanzi:"多少",pinyin:"duōshao",translation:"сколько",example:"多少钱？",example_ru:"Сколько стоит?"},{hanzi:"儿子",pinyin:"érzi",translation:"сын",example:"我有一个儿子。",example_ru:"У меня есть сын."},{hanzi:"饭",pinyin:"fàn",translation:"еда",example:"我们吃饭。",example_ru:"Мы едим."},{hanzi:"高兴",pinyin:"gāoxìng",translation:"рад",example:"我很高兴。",example_ru:"Я рад."},{hanzi:"个",pinyin:"gè",translation:"сч. слово",example:"一个人。",example_ru:"Один человек."},{hanzi:"工作",pinyin:"gōngzuò",translation:"работа",example:"我工作。",example_ru:"Я работаю."},{hanzi:"狗",pinyin:"gǒu",translation:"собака",example:"我有一只狗。",example_ru:"У меня есть собака."},{hanzi:"国",pinyin:"guó",translation:"страна",example:"中国是大国。",example_ru:"Китай большая страна."},{hanzi:"好",pinyin:"hǎo",translation:"хороший",example:"你好。",example_ru:"Здравствуйте."},{hanzi:"喝",pinyin:"hē",translation:"пить",example:"我喝水。",example_ru:"Я пью воду."},{hanzi:"很",pinyin:"hěn",translation:"очень",example:"今天很热。",example_ru:"Сегодня жарко."},{hanzi:"家",pinyin:"jiā",translation:"дом",example:"我回家。",example_ru:"Я возвращаюсь домой."},{hanzi:"叫",pinyin:"jiào",translation:"звать",example:"我叫李明。",example_ru:"Меня зовут Ли Мин."},{hanzi:"九",pinyin:"jiǔ",translation:"девять",example:"九个人。",example_ru:"Девять человек."},{hanzi:"看",pinyin:"kàn",translation:"смотреть",example:"我看书。",example_ru:"Я читаю книгу."},{hanzi:"老师",pinyin:"lǎoshī",translation:"учитель",example:"老师很好。",example_ru:"Учитель хороший."},{hanzi:"里",pinyin:"lǐ",translation:"внутри",example:"书在包里。",example_ru:"Книга в сумке."},{hanzi:"六",pinyin:"liù",translation:"шесть",example:"六个人。",example_ru:"Шесть человек."},{hanzi:"妈妈",pinyin:"māma",translation:"мама",example:"我爱妈妈。",example_ru:"Я люблю маму."},{hanzi:"猫",pinyin:"māo",translation:"кошка",example:"我有猫。",example_ru:"У меня есть кошка."},{hanzi:"米饭",pinyin:"mǐfàn",translation:"рис",example:"我吃米饭。",example_ru:"Я ем рис."},{hanzi:"名字",pinyin:"míngzi",translation:"имя",example:"你的名字？",example_ru:"Твоё имя?"},{hanzi:"明天",pinyin:"míngtiān",translation:"завтра",example:"明天见。",example_ru:"Увидимся завтра."},{hanzi:"哪",pinyin:"nǎ",translation:"какой",example:"你要哪个？",example_ru:"Какой ты хочешь?"},{hanzi:"哪里",pinyin:"nǎlǐ",translation:"где",example:"你在哪里？",example_ru:"Где ты?"},{hanzi:"你",pinyin:"nǐ",translation:"ты",example:"你好。",example_ru:"Привет."},{hanzi:"朋友",pinyin:"péngyou",translation:"друг",example:"他是我的朋友。",example_ru:"Он мой друг."},{hanzi:"苹果",pinyin:"píngguǒ",translation:"яблоко",example:"我吃苹果。",example_ru:"Я ем яблоко."},{hanzi:"七",pinyin:"qī",translation:"семь",example:"七个人。",example_ru:"Семь человек."},{hanzi:"钱",pinyin:"qián",translation:"деньги",example:"我没有钱。",example_ru:"У меня нет денег."},{hanzi:"去",pinyin:"qù",translation:"идти",example:"我去学校。",example_ru:"Я иду в школу."},{hanzi:"人",pinyin:"rén",translation:"человек",example:"很多人。",example_ru:"Много людей."},{hanzi:"三",pinyin:"sān",translation:"три",example:"三个人。",example_ru:"Три человека."},{hanzi:"上",pinyin:"shàng",translation:"на",example:"书在桌子上。",example_ru:"Книга на столе."},{hanzi:"谁",pinyin:"shéi",translation:"кто",example:"他是谁？",example_ru:"Кто он?"},{hanzi:"十",pinyin:"shí",translation:"десять",example:"十个人。",example_ru:"Десять человек."},{hanzi:"是",pinyin:"shì",translation:"быть",example:"我是学生。",example_ru:"Я студент."},{hanzi:"书",pinyin:"shū",translation:"книга",example:"我看书。",example_ru:"Я читаю книгу."},{hanzi:"水",pinyin:"shuǐ",translation:"вода",example:"我喝水。",example_ru:"Я пью воду."},{hanzi:"四",pinyin:"sì",translation:"четыре",example:"四个人。",example_ru:"Четыре человека."},{hanzi:"他",pinyin:"tā",translation:"он",example:"他是老师。",example_ru:"Он учитель."},{hanzi:"她",pinyin:"tā",translation:"она",example:"她很好。",example_ru:"Она хорошая."},{hanzi:"听",pinyin:"tīng",translation:"слушать",example:"我听音乐。",example_ru:"Я слушаю музыку."},{hanzi:"我",pinyin:"wǒ",translation:"я",example:"我是老师。",example_ru:"Я учитель."},{hanzi:"五",pinyin:"wǔ",translation:"пять",example:"五个人。",example_ru:"Пять человек."},{hanzi:"喜欢",pinyin:"xǐhuan",translation:"нравиться",example:"我喜欢中国。",example_ru:"Мне нравится Китай."},{hanzi:"现在",pinyin:"xiànzài",translation:"сейчас",example:"我现在学习。",example_ru:"Я сейчас учусь."},{hanzi:"写",pinyin:"xiě",translation:"писать",example:"我写字。",example_ru:"Я пишу."},{hanzi:"谢谢",pinyin:"xièxie",translation:"спасибо",example:"谢谢你。",example_ru:"Спасибо."},{hanzi:"学习",pinyin:"xuéxí",translation:"учиться",example:"我学习汉语。",example_ru:"Я изучаю китайский."},{hanzi:"学校",pinyin:"xuéxiào",translation:"школа",example:"我在学校。",example_ru:"Я в школе."},{hanzi:"一",pinyin:"yī",translation:"один",example:"一个人。",example_ru:"Один человек."},{hanzi:"医生",pinyin:"yīshēng",translation:"врач",example:"他是医生。",example_ru:"Он врач."},{hanzi:"医院",pinyin:"yīyuàn",translation:"больница",example:"我去医院。",example_ru:"Я иду в больницу."},{hanzi:"有",pinyin:"yǒu",translation:"иметь",example:"我有朋友。",example_ru:"У меня есть друзья."},{hanzi:"在",pinyin:"zài",translation:"находиться",example:"我在家。",example_ru:"Я дома."},{hanzi:"再见",pinyin:"zàijiàn",translation:"до свидания",example:"老师再见。",example_ru:"До свидания учитель."},{hanzi:"早上",pinyin:"zǎoshang",translation:"утром",example:"早上好。",example_ru:"Доброе утро."},{hanzi:"怎么",pinyin:"zěnme",translation:"как",example:"这个怎么说？",example_ru:"Как это сказать?"},{hanzi:"这",pinyin:"zhè",translation:"этот",example:"这是书。",example_ru:"Это книга."},{hanzi:"中国",pinyin:"Zhōngguó",translation:"Китай",example:"我爱中国。",example_ru:"Я люблю Китай."},{hanzi:"中文",pinyin:"Zhōngwén",translation:"китайский язык",example:"我学习中文。",example_ru:"Я изучаю китайский."},{hanzi:"中午",pinyin:"zhōngwǔ",translation:"полдень",example:"中午吃饭。",example_ru:"Мы едим в полдень."},{hanzi:"住",pinyin:"zhù",translation:"жить",example:"我住北京。",example_ru:"Я живу в Пекине."},{hanzi:"桌子",pinyin:"zhuōzi",translation:"стол",example:"书在桌子上。",example_ru:"Книга на столе."},{hanzi:"字",pinyin:"zì",translation:"иероглиф",example:"这个字很难。",example_ru:"Этот иероглиф трудный."},{hanzi:"坐",pinyin:"zuò",translation:"сидеть",example:"请坐。",example_ru:"Садитесь."},{hanzi:"做",pinyin:"zuò",translation:"делать",example:"我做饭。",example_ru:"Я готовлю."},{hanzi:"昨天",pinyin:"zuótiān",translation:"вчера",example:"我昨天学习。",example_ru:"Я учился вчера."}];
-let index=0;
+let words = ['爱', '吧', '八', '爸爸', '百', '白天', '半', '包子', '杯子', '本', '边', '病', '不', '不客气', '不要', '菜', '茶', '常', '超市', '车', '吃', '穿', '出租车', '大', '打电话', '大家', '到', '大学', '大学生', '的', '第', '点', '电话', '电脑', '电视', '电影', '电影院', '弟弟', '东西', '都', '读', '对', '对不起', '多', '多少', '读书', '二', '儿子', '饭', '饭店', '房间', '非常', '飞机', '分', '分钟', '高兴', '个', '歌', '哥哥', '给', '工作', '狗', '汉语', '好', '号', '喝', '和', '很', '后面', '回', '会', '火车', '几', '家', '叫', '今天', '九', '开', '看', '看见', '块', '来', '老师', '了', '冷', '里', '两', '零', '六', '妈妈', '吗', '买', '猫', '没', '没关系', '米饭', '面条', '名字', '明天', '哪', '哪儿', '那', '呢', '能', '你', '年', '女儿', '朋友', '漂亮', '苹果', '七', '前面', '钱', '请', '去', '热', '人', '认识', '日', '三', '商店', '上', '上午', '少', '谁', '什么', '十', '时候', '是', '书', '水', '水果', '睡觉', '说', '四', '岁', '他', '她', '太', '天气', '听', '同学', '喂', '我', '我们', '五', '喜欢', '下', '下午', '下雨', '先生', '现在', '想', '小', '小姐', '些', '写', '谢谢', '星期', '学生', '学习', '学校', '一', '衣服', '医生', '医院', '椅子', '有', '月', '再见', '在', '怎么', '怎么样', '这', '中国', '中午', '住', '桌子', '字', '昨天', '做'];
+let index = 0;
+let card = document.getElementById("card");
 
-function showCard(){
-document.getElementById("hanzi").innerText=cards[index].hanzi;
-document.getElementById("example").innerText=cards[index].example;
-document.getElementById("pinyin").innerText=cards[index].pinyin;
-document.getElementById("translation").innerText=cards[index].translation;
-document.getElementById("exampleBack").innerText=cards[index].example;
-document.getElementById("exampleRu").innerText=cards[index].example_ru;
-document.getElementById("card").classList.remove("flip");
+function show(){
+document.getElementById("word").innerText = words[index];
+document.getElementById("wordBack").innerText = words[index];
+document.getElementById("counter").innerText = (index+1) + " / " + words.length;
+card.classList.remove("flip");
 }
 
-function nextCard(){index++; if(index>=cards.length) index=0; showCard();}
-function prevCard(){index--; if(index<0) index=cards.length-1; showCard();}
+function next(){index++;if(index>=words.length) index=0;show();}
+function prev(){index--;if(index<0) index=words.length-1;show();}
 
-document.getElementById("card").onclick=function(){this.classList.toggle("flip")};
-document.addEventListener("DOMContentLoaded", showCard);
+card.addEventListener("click",()=>card.classList.toggle("flip"));
+
+let startX=0;
+document.addEventListener("touchstart",e=>startX=e.changedTouches[0].screenX);
+document.addEventListener("touchend",e=>{
+let diff=e.changedTouches[0].screenX-startX;
+if(diff>50) prev();
+if(diff<-50) next();
+});
+
+show();
 </script>
 
 </body>
