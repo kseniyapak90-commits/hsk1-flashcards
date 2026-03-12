@@ -5,36 +5,62 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HSK Flashcards</title>
+
+<script src="https://unpkg.com/pinyin-pro"></script>
+
 <style>
 body{margin:0;background:#e9e5df;font-family:-apple-system;display:flex;justify-content:center;align-items:center;height:100vh;}
 .container{width:92%;max-width:420px;text-align:center}
 .title{background:#f5a63b;padding:14px;border-radius:30px;font-size:22px;font-weight:bold;margin-bottom:18px;box-shadow:0 6px #b36a1e;}
-.card{width:100%;height:300px;perspective:1000px}
+
+.card{width:100%;height:320px;perspective:1000px}
 .inner{position:relative;width:100%;height:100%;transition:transform .6s;transform-style:preserve-3d;}
 .card.flip .inner{transform:rotateY(180deg)}
-.side{position:absolute;width:100%;height:100%;background:#2e5b46;border-radius:25px;border:10px solid #7a5631;display:flex;flex-direction:column;justify-content:center;align-items:center;color:white;backface-visibility:hidden;box-shadow: inset 0 0 6px #3f7a5e,0 10px 20px rgba(0,0,0,.2);}
+
+.side{
+position:absolute;width:100%;height:100%;
+background:#2e5b46;border-radius:25px;border:10px solid #7a5631;
+display:flex;flex-direction:column;justify-content:center;align-items:center;
+color:white;padding:20px;text-align:center;
+backface-visibility:hidden;
+box-shadow: inset 0 0 6px #3f7a5e,0 10px 20px rgba(0,0,0,.2);
+}
+
 .back{transform:rotateY(180deg)}
-.hanzi{font-size:72px;margin-bottom:10px}
+
+.hanzi{font-size:70px;margin-bottom:12px}
+.example{font-size:20px;margin-top:10px}
+.pinyin{font-size:18px;margin-top:10px;color:#ffe7b0}
+.translation{font-size:18px;margin-top:6px;color:#fff}
+
 .controls{margin-top:20px;display:flex;gap:12px;justify-content:center}
 button{background:#e9c48c;border:none;padding:12px 22px;border-radius:30px;font-size:16px;box-shadow:0 6px #a77a40;}
+
 .counter{margin-top:10px;font-size:14px;color:#333}
 </style>
 </head>
+
 <body>
 
 <div class="container">
+
 <div class="title">HSK Flashcards</div>
 
 <div class="card" id="card">
 <div class="inner">
+
 <div class="side">
 <div class="hanzi" id="word"></div>
-<div>tap to flip</div>
+<div class="example" id="example"></div>
 </div>
+
 <div class="side back">
-<div class="hanzi" id="wordBack"></div>
-<div>HSK word</div>
+<div class="pinyin" id="pinyin"></div>
+<div class="translation" id="translation"></div>
+<div class="pinyin" id="examplePinyin"></div>
+<div class="translation" id="exampleTranslation"></div>
 </div>
+
 </div>
 </div>
 
@@ -44,22 +70,48 @@ button{background:#e9c48c;border:none;padding:12px 22px;border-radius:30px;font-
 </div>
 
 <div class="counter" id="counter"></div>
+
 </div>
 
 <script>
-let words = ['爱', '吧', '八', '爸爸', '百', '白天', '半', '包子', '杯子', '本', '边', '病', '不', '不客气', '不要', '菜', '茶', '常', '超市', '车', '吃', '穿', '出租车', '大', '打电话', '大家', '到', '大学', '大学生', '的', '第', '点', '电话', '电脑', '电视', '电影', '电影院', '弟弟', '东西', '都', '读', '对', '对不起', '多', '多少', '读书', '二', '儿子', '饭', '饭店', '房间', '非常', '飞机', '分', '分钟', '高兴', '个', '歌', '哥哥', '给', '工作', '狗', '汉语', '好', '号', '喝', '和', '很', '后面', '回', '会', '火车', '几', '家', '叫', '今天', '九', '开', '看', '看见', '块', '来', '老师', '了', '冷', '里', '两', '零', '六', '妈妈', '吗', '买', '猫', '没', '没关系', '米饭', '面条', '名字', '明天', '哪', '哪儿', '那', '呢', '能', '你', '年', '女儿', '朋友', '漂亮', '苹果', '七', '前面', '钱', '请', '去', '热', '人', '认识', '日', '三', '商店', '上', '上午', '少', '谁', '什么', '十', '时候', '是', '书', '水', '水果', '睡觉', '说', '四', '岁', '他', '她', '太', '天气', '听', '同学', '喂', '我', '我们', '五', '喜欢', '下', '下午', '下雨', '先生', '现在', '想', '小', '小姐', '些', '写', '谢谢', '星期', '学生', '学习', '学校', '一', '衣服', '医生', '医院', '椅子', '有', '月', '再见', '在', '怎么', '怎么样', '这', '中国', '中午', '住', '桌子', '字', '昨天', '做'];
+
+let words = ['爱', '吧', '八', '爸爸', '百', '白天', '半', '包子', '杯子', '本', '边', '病', '不', '不客气', '不要', '菜', '茶', '常', '超市', '车', '吃', '穿', '出租车', '大', '打电话', '大家', '到', '大学', '大学生', '的', '第', '点', '电话', '电脑', '电视', '电影', '电影院', '弟弟', '东西', '都', '读', '对', '对不起', '多', '多少', '读书', '二', '儿子', '饭', '饭店', '房间', '非常', '飞机', '分', '分钟', '高兴', '个', '歌', '哥哥', '给', '工作', '狗', '汉语', '好', '号', '喝', '和', '很', '后面', '回', '会', '火车', '几', '家', '叫', '今天', '九', '开', '看', '看见', '块', '来', '老师', '了', '冷', '里', '两', '零', '六', '妈妈', '吗', '买', '猫', '没', '没关系', '米饭', '面条', '名字', '明天', '哪', '哪儿', '那', '呢', '能', '你', '年', '女儿', '朋友', '漂亮', '苹果', '七', '前面', '钱', '请', '去', '热', '人', '认识', '日', '三', '商店', '上', '上午', '少', '谁', '什么', '十', '时候', '是', '书', '水', '水果', '睡觉', '说', '四', '岁', '他', '她', '太', '天气', '听', '同学', '喂', '我', '我们', '五', '喜欢', '下', '下午', '下雨', '先生', '现在', '想', '小', '小姐', '些', '写', '谢谢', '星期', '学生', '学习', '学校', '一', '衣服', '医生', '医院', '椅子', '有', '月', '再见', '在', '怎么', '怎么样', '这', '中国', '中午', '住', '桌子', '字', '昨天', '做', '东', '西', '南', '北', '朋友们', '谢谢你'];
 let index = 0;
 let card = document.getElementById("card");
 
+function exampleSentence(word){
+return "我喜欢 " + word;
+}
+
 function show(){
-document.getElementById("word").innerText = words[index];
-document.getElementById("wordBack").innerText = words[index];
+let word = words[index];
+let example = exampleSentence(word);
+
+document.getElementById("word").innerText = word;
+document.getElementById("example").innerText = example;
+
+document.getElementById("pinyin").innerText = pinyinPro.pinyin(word);
+document.getElementById("translation").innerText = "translation: (add later if needed)";
+
+document.getElementById("examplePinyin").innerText = pinyinPro.pinyin(example);
+document.getElementById("exampleTranslation").innerText = "I like " + word;
+
 document.getElementById("counter").innerText = (index+1) + " / " + words.length;
+
 card.classList.remove("flip");
 }
 
-function next(){index++;if(index>=words.length) index=0;show();}
-function prev(){index--;if(index<0) index=words.length-1;show();}
+function next(){
+index++;
+if(index>=words.length) index=0;
+show();
+}
+
+function prev(){
+index--;
+if(index<0) index=words.length-1;
+show();
+}
 
 card.addEventListener("click",()=>card.classList.toggle("flip"));
 
@@ -72,6 +124,7 @@ if(diff<-50) next();
 });
 
 show();
+
 </script>
 
 </body>
